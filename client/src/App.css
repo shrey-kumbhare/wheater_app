@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+/* client/src/App.css */
+.app-container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.navbar {
+  background-color: #007bff;
+  padding: 10px;
+}
+
+.nav-button {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  margin: 0 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #0056b3;
+}

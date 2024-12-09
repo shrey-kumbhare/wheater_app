@@ -1,7 +1,7 @@
+// App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import axios from "axios";
-import jwtDecode from "jwt-decode";
+import axios from "axios"; // Import axios for making API calls
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";
@@ -12,27 +12,27 @@ const App = () => {
   const [token, setToken] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
 
-  const addSearchHistory = async (city, temperature) => {
-    if (!token) {
-      console.error("No token available");
-      return;
-    }
+  const addSearchHistory = (city, temperature) => {
+    setSearchHistory([...searchHistory, { city, temperature }]);
+  };
 
-    try {
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.id;
-      await axios.post(
-        "http://localhost:5000/api/search",
-        { userId, city, temperature },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setSearchHistory([...searchHistory, { city, temperature }]);
-    } catch (error) {
-      console.error("Error saving search history:", error);
+  const logout = async () => {
+    if (token) {
+      try {
+        await axios.post(
+          "http://localhost:5000/api/auth/search",
+          { searchHistory },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log("Search history saved successfully.");
+      } catch (error) {
+        console.error("Error saving search history:", error);
+      }
     }
+    setToken(null);
+    setSearchHistory([]);
   };
 
   return (
@@ -54,9 +54,17 @@ const App = () => {
           <Link to="/report" className="nav-button">
             Report
           </Link>
+          <button onClick={logout} className="nav-button">
+            Logout
+          </button>
         </nav>
         <Routes>
-          <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route
+            path="/login"
+            element={
+              <Login setToken={setToken} setSearchHistory={setSearchHistory} />
+            }
+          />
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/weather"

@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import axios from "axios"; // Import axios for making API calls
@@ -9,30 +8,35 @@ import Report from "./components/Report";
 import "./App.css";
 
 const App = () => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [searchHistory, setSearchHistory] = useState([]);
 
+  // Add to search history
   const addSearchHistory = (city, temperature) => {
-    setSearchHistory([...searchHistory, { city, temperature }]);
+    const newSearchHistory = [...searchHistory, { city, temperature }];
+    setSearchHistory(newSearchHistory);
+    if (token) {
+      axios
+        .post(
+          "http://localhost:5000/api/auth/search",
+          { userId: 1, city, temperature },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then(() => {
+          console.log("Search history saved successfully.");
+        })
+        .catch((error) => {
+          console.error("Error saving search history:", error);
+        });
+    }
   };
 
+  // Logout and clear state
   const logout = async () => {
-    if (token) {
-      try {
-        await axios.post(
-          "http://localhost:5000/api/auth/search",
-          { searchHistory },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log("Search history saved successfully.");
-      } catch (error) {
-        console.error("Error saving search history:", error);
-      }
-    }
     setToken(null);
     setSearchHistory([]);
+    localStorage.removeItem("token"); // Clear token from localStorage
+    console.log("Logged out successfully.");
   };
 
   return (

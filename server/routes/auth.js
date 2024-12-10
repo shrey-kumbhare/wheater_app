@@ -3,8 +3,8 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
-
-const SECRET_KEY = process.env.SECRET_KEY;
+const User = require("../models/User");
+const SECRET_KEY = "672cb4090b44630164e815055032fa4e";
 
 module.exports = (pool) => {
   router.post("/register", async (req, res) => {
@@ -57,5 +57,43 @@ module.exports = (pool) => {
     }
   });
 
+  // Add search history
+  router.post("/search", async (req, res) => {
+    const { userId, city } = req.body;
+
+    // Validate input parameters
+    if (!userId || !city) {
+      return res
+        .status(400)
+        .json({ error: "userId and city are required fields." });
+    }
+
+    try {
+      // Call the User model method to add search history
+      const result = await User.addSearchHistory(userId, city);
+
+      // Respond with success message
+      return res
+        .status(201)
+        .json({ message: "Search history added successfully.", result });
+    } catch (error) {
+      console.error("Error adding search history:", error);
+
+      // Respond with a generic error message
+      return res.status(500).json({ error: "Failed to add search history." });
+    }
+  });
+
+  // Get search history
+  router.get("/search/:userId", async (req, res) => {
+    const { userId } = req.params;
+    try {
+      const history = await User.getSearchHistory(userId);
+      return res.status(200).json(history);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Database error" });
+    }
+  });
   return router;
 };

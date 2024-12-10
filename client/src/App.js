@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import axios from "axios";
 import Login from "./components/Login";
@@ -11,7 +11,21 @@ const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [searchHistory, setSearchHistory] = useState([]);
 
-  // Add to search history
+  useEffect(() => {
+    if (token) {
+      const userId = 1;
+      axios
+        .get(`http://localhost:5000/api/auth/search/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setSearchHistory(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching search history:", error);
+        });
+    }
+  }, [token]);
   const addSearchHistory = (city, temperature) => {
     const newSearchHistory = [...searchHistory, { city, temperature }];
     setSearchHistory(newSearchHistory);
@@ -35,7 +49,7 @@ const App = () => {
   const logout = async () => {
     setToken(null);
     setSearchHistory([]);
-    localStorage.removeItem("token"); // Clear token from localStorage
+    localStorage.removeItem("token");
     console.log("Logged out successfully.");
   };
 

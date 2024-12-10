@@ -1,4 +1,3 @@
-// server/routes/auth.js
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -57,11 +56,9 @@ module.exports = (pool) => {
     }
   });
 
-  // Add search history
   router.post("/search", async (req, res) => {
     const { userId, city } = req.body;
 
-    // Validate input parameters
     if (!userId || !city) {
       return res
         .status(400)
@@ -69,22 +66,18 @@ module.exports = (pool) => {
     }
 
     try {
-      // Call the User model method to add search history
       const result = await User.addSearchHistory(userId, city);
 
-      // Respond with success message
       return res
         .status(201)
         .json({ message: "Search history added successfully.", result });
     } catch (error) {
       console.error("Error adding search history:", error);
 
-      // Respond with a generic error message
       return res.status(500).json({ error: "Failed to add search history." });
     }
   });
 
-  // Get search history
   router.get("/search/:userId", async (req, res) => {
     const { userId } = req.params;
     try {

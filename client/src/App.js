@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import axios from "axios"; // Import axios for making API calls
+import axios from "axios";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";

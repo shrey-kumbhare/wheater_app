@@ -22,15 +22,15 @@ const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [email, setEmail] = useState("");
-  const [id, setid] = useState("");
+  const [userId, setuserId] = useState("");
 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
-      setid(decodedToken.id);
+      setuserId(decodedToken.id);
       setEmail(decodedToken.email);
       axios
-        .get(`http://localhost:5000/api/auth/search/${id}`, {
+        .get(`http://localhost:5000/api/auth/search/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -40,7 +40,7 @@ const App = () => {
           console.error("Error fetching search history:", error);
         });
     }
-  }, [token]);
+  }, [token, userId, email]);
 
   const addSearchHistory = (city, temperature) => {
     const newSearchHistory = [...searchHistory, { city, temperature }];
@@ -49,7 +49,7 @@ const App = () => {
       axios
         .post(
           "http://localhost:5000/api/auth/search",
-          { id, city, temperature },
+          { userId, city, temperature },
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(() => {

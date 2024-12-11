@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";
@@ -23,7 +24,8 @@ const App = () => {
 
   useEffect(() => {
     if (token) {
-      const userId = 1;
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.id;
       axios
         .get(`http://localhost:5000/api/auth/search/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -41,10 +43,12 @@ const App = () => {
     const newSearchHistory = [...searchHistory, { city, temperature }];
     setSearchHistory(newSearchHistory);
     if (token) {
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.id;
       axios
         .post(
           "http://localhost:5000/api/auth/search",
-          { userId: 1, city, temperature },
+          { userId, city, temperature },
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(() => {
@@ -55,6 +59,7 @@ const App = () => {
         });
     }
   };
+
   const logout = () => {
     setToken(null);
     setSearchHistory([]);
@@ -74,7 +79,6 @@ const App = () => {
               Login
             </Link>
           )}
-
           {token && (
             <Link to="/weather" className="nav-button">
               Weather

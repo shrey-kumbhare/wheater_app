@@ -2,7 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import React, { useState } from "react";
 
 const Login = ({ setToken }) => {
-  const [email, setEmail] = useState(""); // Changed username to email for consistency
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ const Login = ({ setToken }) => {
 
       const data = await response.json();
       const token = data.token;
-      localStorage.setItem("token", token); // Store token in localStorage
+      localStorage.setItem("token", token);
       setToken(token);
-      navigate("/"); // Redirect to homepage after successful login
+      navigate("/");
     } catch (error) {
       setError(error.message);
     }

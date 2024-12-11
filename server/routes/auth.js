@@ -81,7 +81,7 @@ module.exports = (pool) => {
   });
 
   router.post("/search", async (req, res) => {
-    const { userId, city } = req.body;
+    const { userId, city, temperature } = req.body;
 
     if (!userId || !city) {
       return res
@@ -90,10 +90,7 @@ module.exports = (pool) => {
     }
 
     try {
-      const [result] = await pool.query(
-        "INSERT INTO search_history (user_id, city, search_date) VALUES (?, ?, NOW())",
-        [userId, city]
-      );
+      const [result] = User.addSearchHistory(userId, city, temperature);
 
       return res.status(201).json({
         message: "Search history added successfully.",

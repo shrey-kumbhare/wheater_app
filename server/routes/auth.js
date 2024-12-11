@@ -82,7 +82,6 @@ module.exports = (pool) => {
 
   router.post("/search", async (req, res) => {
     const { userId, city, temperature } = req.body;
-
     if (!userId || !city) {
       return res
         .status(400)
@@ -90,15 +89,26 @@ module.exports = (pool) => {
     }
 
     try {
-      const [result] = User.addSearchHistory(userId, city, temperature);
-
-      return res.status(201).json({
-        message: "Search history added successfully.",
-        result,
-      });
+      const [existingCity] = await User.checkCity(userId, city);
+      let result;
+      if (existingCity) {
+        result = await User.updateSearchHistory(userId, city, temperature);
+        return res.status(200).json({
+          message: "Search history updated successfully.",
+          result,
+        });
+      } else {
+        result = await User.addSearchHistory(userId, city, temperature);
+        return res.status(201).json({
+          message: "Search history added successfully.",
+          result,
+        });
+      }
     } catch (error) {
-      console.error("Error adding search history:", error);
-      return res.status(500).json({ error: "Failed to add search history." });
+      console.error("Error adding or updating search history:", error);
+      return res
+        .status(500)
+        .json({ error: "Failed to add or update search history." });
     }
   });
 

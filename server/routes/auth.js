@@ -17,7 +17,10 @@ module.exports = (pool) => {
     }
 
     try {
-      const [existingUser] = await User.findByEmail(email);
+      const [existingUser] = await pool.query(
+        "SELECT * FROM users WHERE email = ?",
+        [email]
+      );
 
       if (existingUser.length > 0) {
         return res.status(400).json({ message: "Username already exists." });
@@ -25,11 +28,9 @@ module.exports = (pool) => {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const [result] = await User.create(
-        username,
-        email,
-        phone,
-        hashedPassword
+      const [result] = await pool.query(
+        "INSERT INTO users (username, email, phone,password ) VALUES (?, ?,?, ? )",
+        [username, email, phone, hashedPassword]
       );
 
       const token = jwt.sign({ id: result.insertId, username }, SECRET_KEY, {

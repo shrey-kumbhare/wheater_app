@@ -4,19 +4,6 @@ const { db } = require("../config");
 const pool = mysql.createPool(db);
 
 const User = {
-  async create(name, email, phone, password) {
-    const [result] = await pool.execute(
-      "INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)",
-      [name, email, phone, password]
-    );
-    return result;
-  },
-  async findByEmail(email) {
-    const [rows] = await pool.execute("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    return rows[0];
-  },
   async checkCity(userId, city) {
     const [result] = await pool.execute(
       " SELECT * FROM search_history WHERE user_id  = ? and city=? ",

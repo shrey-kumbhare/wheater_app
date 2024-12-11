@@ -9,5 +9,5 @@ module.exports = {
     database: process.env.DB_NAME,
   },
   jwtSecret: process.env.JWT_SECRET,
-  weatherAPIKey: process.env.WEATHER_API_KEY,
+  weatherAPIKey: process.env.WEATHERSTACK_API_KEY,
 };

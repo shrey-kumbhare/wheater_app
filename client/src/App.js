@@ -12,7 +12,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";
 import Report from "./components/Report";
-import "./App.css";
+import "./tailwind.css"; // Make sure you're including Tailwind's compiled CSS
 
 const ProtectedRoute = ({ token, children }) => {
   return token ? children : <Navigate to="/login" />;
@@ -69,62 +69,76 @@ const App = () => {
 
   return (
     <Router>
-      <div className="app-container">
-        <nav className="navbar">
-          <Link to="/" className="nav-button">
-            Home
-          </Link>
-          {!token && (
-            <Link to="/login" className="nav-button">
-              Login
+      <div className="min-h-screen flex flex-col">
+        <nav className="bg-blue-600 p-4 text-white flex justify-between items-center">
+          <div className="text-xl font-semibold">
+            <Link to="/" className="hover:underline">
+              Home
             </Link>
-          )}
-          {token && (
-            <Link to="/weather" className="nav-button">
-              Weather
-            </Link>
-          )}
-          {token && (
-            <Link to="/report" className="nav-button">
-              Report
-            </Link>
-          )}
-          {token && (
-            <button onClick={logout} className="nav-button">
-              Logout
-            </button>
-          )}
+          </div>
+          <div className="space-x-4">
+            {!token && (
+              <Link to="/login" className="hover:underline">
+                Login
+              </Link>
+            )}
+            {token && (
+              <>
+                <Link to="/weather" className="hover:underline">
+                  Weather
+                </Link>
+                <Link to="/report" className="hover:underline">
+                  Report
+                </Link>
+                <button
+                  onClick={logout}
+                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </nav>
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <Login
-                setToken={setToken}
-                token={token}
-                setSearchHistory={setSearchHistory}
-              />
-            }
-          />
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/weather"
-            element={
-              <ProtectedRoute token={token}>
-                <Weather token={token} addSearchHistory={addSearchHistory} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/report"
-            element={
-              <ProtectedRoute token={token}>
-                <Report searchHistory={searchHistory} />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<h1>Welcome to the Weather App</h1>} />
-        </Routes>
+        <div className="container mx-auto p-4 flex-grow">
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <Login
+                  setToken={setToken}
+                  token={token}
+                  setSearchHistory={setSearchHistory}
+                />
+              }
+            />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/weather"
+              element={
+                <ProtectedRoute token={token}>
+                  <Weather token={token} addSearchHistory={addSearchHistory} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/report"
+              element={
+                <ProtectedRoute token={token}>
+                  <Report searchHistory={searchHistory} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <h1 className="text-3xl font-bold text-center">
+                  Welcome to the Weather App
+                </h1>
+              }
+            />
+          </Routes>
+        </div>
       </div>
     </Router>
   );

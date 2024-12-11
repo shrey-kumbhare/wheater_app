@@ -1,8 +1,8 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
-
-const ACCESS_KEY = "672cb4090b44630164e815055032fa4e";
+const { weatherAPIKey } = require("../config");
+const ACCESS_KEY = weatherAPIKey;
 
 module.exports = (pool) => {
   router.get("/:city", async (req, res) => {

@@ -12,7 +12,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";
 import Report from "./components/Report";
-import "./tailwind.css"; // Make sure you're including Tailwind's compiled CSS
+import "./tailwind.css";
 
 const ProtectedRoute = ({ token, children }) => {
   return token ? children : <Navigate to="/login" />;
@@ -21,13 +21,16 @@ const ProtectedRoute = ({ token, children }) => {
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [searchHistory, setSearchHistory] = useState([]);
+  const [email, setEmail] = useState("");
+  const [id, setid] = useState("");
 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
-      const userId = decodedToken.id;
+      setid(decodedToken.id);
+      setEmail(decodedToken.email);
       axios
-        .get(`http://localhost:5000/api/auth/search/${userId}`, {
+        .get(`http://localhost:5000/api/auth/search/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -43,12 +46,10 @@ const App = () => {
     const newSearchHistory = [...searchHistory, { city, temperature }];
     setSearchHistory(newSearchHistory);
     if (token) {
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.id;
       axios
         .post(
           "http://localhost:5000/api/auth/search",
-          { userId, city, temperature },
+          { id, city, temperature },
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(() => {
@@ -125,7 +126,7 @@ const App = () => {
               path="/report"
               element={
                 <ProtectedRoute token={token}>
-                  <Report searchHistory={searchHistory} />
+                  <Report searchHistory={searchHistory} email={email} />
                 </ProtectedRoute>
               }
             />

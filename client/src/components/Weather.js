@@ -19,7 +19,6 @@ const Weather = ({ token, addSearchHistory }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response);
       setWeatherData(response.data);
       addSearchHistory(city, response.data.temperature);
     } catch (err) {

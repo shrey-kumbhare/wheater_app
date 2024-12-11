@@ -1,12 +1,15 @@
 import React from "react";
 
-const Report = ({ searchHistory }) => {
+const Report = ({ searchHistory, email }) => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
           Search Report
         </h2>
+        <p className="text-lg text-blue-600 font-semibold">
+          User: <span className="font-normal text-gray-800"> {email}</span>
+        </p>
         {searchHistory.length === 0 ? (
           <p className="text-center text-gray-500">
             No search history available.
@@ -18,12 +21,6 @@ const Report = ({ searchHistory }) => {
                 key={index}
                 className="bg-gray-100 p-4 rounded-md shadow-md hover:bg-blue-50 transition duration-300"
               >
-                <p className="text-lg text-blue-600 font-semibold">
-                  User:{" "}
-                  <span className="font-normal text-gray-800">
-                    {entry.username}
-                  </span>
-                </p>
                 <p className="text-lg text-blue-600 font-semibold">
                   City:{" "}
                   <span className="font-normal text-gray-800">

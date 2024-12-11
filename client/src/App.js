@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import axios from "axios";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Weather from "./components/Weather";
 import Report from "./components/Report";
 import "./App.css";
+
+const ProtectedRoute = ({ token, children }) => {
+  return token ? children : <Navigate to="/login" />;
+};
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -26,6 +36,7 @@ const App = () => {
         });
     }
   }, [token]);
+
   const addSearchHistory = (city, temperature) => {
     const newSearchHistory = [...searchHistory, { city, temperature }];
     setSearchHistory(newSearchHistory);
@@ -44,9 +55,7 @@ const App = () => {
         });
     }
   };
-
-  // Logout and clear state
-  const logout = async () => {
+  const logout = () => {
     setToken(null);
     setSearchHistory([]);
     localStorage.removeItem("token");
@@ -60,39 +69,55 @@ const App = () => {
           <Link to="/" className="nav-button">
             Home
           </Link>
-          <Link to="/login" className="nav-button">
-            Login
-          </Link>
-          <Link to="/signup" className="nav-button">
-            Signup
-          </Link>
-          <Link to="/weather" className="nav-button">
-            Weather
-          </Link>
-          <Link to="/report" className="nav-button">
-            Report
-          </Link>
-          <button onClick={logout} className="nav-button">
-            Logout
-          </button>
+          {!token && (
+            <Link to="/login" className="nav-button">
+              Login
+            </Link>
+          )}
+
+          {token && (
+            <Link to="/weather" className="nav-button">
+              Weather
+            </Link>
+          )}
+          {token && (
+            <Link to="/report" className="nav-button">
+              Report
+            </Link>
+          )}
+          {token && (
+            <button onClick={logout} className="nav-button">
+              Logout
+            </button>
+          )}
         </nav>
         <Routes>
           <Route
             path="/login"
             element={
-              <Login setToken={setToken} setSearchHistory={setSearchHistory} />
+              <Login
+                setToken={setToken}
+                token={token}
+                setSearchHistory={setSearchHistory}
+              />
             }
           />
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/weather"
             element={
-              <Weather token={token} addSearchHistory={addSearchHistory} />
+              <ProtectedRoute token={token}>
+                <Weather token={token} addSearchHistory={addSearchHistory} />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/report"
-            element={<Report searchHistory={searchHistory} />}
+            element={
+              <ProtectedRoute token={token}>
+                <Report searchHistory={searchHistory} />
+              </ProtectedRoute>
+            }
           />
           <Route path="/" element={<h1>Welcome to the Weather App</h1>} />
         </Routes>
